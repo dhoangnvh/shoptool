@@ -19,3 +19,9 @@ Route::get('/', function () {
 });
 
 Route::get('etsy', [Controllers\CrawlerController::class, 'cralerEtsy']);
+Route::get('setting', [Controllers\SettingSiteController::class, 'index'])->name('setting.index');
+Route::post('setting', [Controllers\SettingSiteController::class, 'store'])->name('setting.store');
+
+Route::get('crawler', [Controllers\CrawlerSiteController::class, 'index'])->name('crawler.index');
+Route::get('crawler/crawler', [Controllers\CrawlerSiteController::class, 'crawler'])->name('crawler.crawler');
+Route::post('crawler/create', [Controllers\CrawlerSiteController::class, 'createProduct'])->name('crawler.create');

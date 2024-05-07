@@ -1,43 +1,44 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Classes\Services;
 
-use Illuminate\Http\Request;
 use Goutte\Client;
 
-class CrawlerController extends Controller
+class EtsyService
 {
-    function cralerEtsy(Request $request)
+    public function cralerEtsy($url)
     {
         $productAttrs = [];
         $client = new Client();
 
-        // $client->getCookieJar()->set(
-        //     new \Symfony\Component\BrowserKit\Cookie('user_prefs', 'tINst4I03RaSSEcz_FaC7t-vFMBjZACCNNXHLTA6WinMz0VJJ680J0dHKTVPNzRYSQcoBBUxglC4iFgGAA..')
-        // );
+        $client->getCookieJar()->set(
+            new \Symfony\Component\BrowserKit\Cookie('user_prefs', 'JpeCtJDNqjvujEj8_5JWLon_cSJjZACCNLXMxzA6WinMz0VJJ680J0dHKTVPNzRYSQcoBBUxglC4iFgGAA..', strtotime('2025-04-22T13:45:07.922Z'))
+        );
 
-        $crawler = $client->request('GET', 'https://www.etsy.com/listing/1623536505/personalized-vinyl-record-with-photo');
+        $crawler = $client->request('GET', $url);
 
         // dd($crawler->html());
 
-            // wt-text-body-01 wt-line-height-tight wt-break-word wt-mt-xs-1
+        $a = $crawler->html();
+
+        $b = 1;
 
         $crawler->filter('#listing-page-cart .wt-text-body-01.wt-line-height-tight')->each(function ($node) use (&$productAttrs) {
             $productAttrs['name'] = $node->text();
         });
 
         $crawler->filter('#listing-page-cart .wt-text-title-larger')->each(function ($node) use (&$productAttrs) {
-            $productAttrs['price1'] = $node->text();
+            $productAttrs['price'] = floatval(str_replace([","], "", $node->text()));
         });
 
         $crawler->filter('#listing-page-cart .wt-text-strikethrough')->each(function ($node) use (&$productAttrs) {
-            $productAttrs['price2'] = $node->text();
+            $productAttrs['price'] = floatval(str_replace([","], "", $node->text()));
         });
 
         $crawler->filter('.listing-page-image-carousel-component .carousel-image')->each(function ($node) use (&$productAttrs) {
             $productAttrs['imgs'][] = $node->attr('src');
         });
 
-        dd($productAttrs);
+        return $productAttrs;
     }
 }
